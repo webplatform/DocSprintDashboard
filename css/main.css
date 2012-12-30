@@ -107,6 +107,50 @@ section {
     height: 93%;
     float: left;
 }
+    .controls {
+        background: #E2E3E4;
+        border-radius: 5px;
+        box-shadow: 0px 0px 1px #000;
+        padding: 1em;
+        margin-bottom: 3em;
+        display: none;
+    }
+
+        table {
+            width: 100%;
+        }
+    
+        td {
+            padding: 0.5em;
+        }
+
+        .input {
+            font-family: 'Gudea', sans-serif;
+        }
+    
+        .wpuserlist {
+            width: 100%;
+        }
+    
+        .blur {
+            -webkit-filter: blur(5px);
+        }
+
+        .unblurbutton {
+            font-family: 'Gudea', sans-serif;
+            color: #fff;
+            background-color: #EE677E;
+            border-radius: 5px;
+            margin-top: 1.5em;
+        }
+
+        .button {
+            font-family: 'Gudea', sans-serif;
+            color: #fff;
+            background-color: #75C9B3;
+            border-radius: 5px;
+            margin: 1.5em 0 0 0.75em;
+        }
 
 h1 {
     font-family: 'Bitter', serif;
@@ -119,7 +163,7 @@ h2 {
 
 dt {
     float: left;
-    width: 3em;
+    width: 4em;
     font-weight: bold;
 }
 

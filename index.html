@@ -29,53 +29,105 @@
             
             <div id="infopod" class="podregular">
                 <h2>
-                    Info Pod
+                    Welcome &amp; Get started!
                 </h2>
                 <p>
-                    1. Put your name into the <a href="">spreadsheet</a>.
+                    Connect to the Intertubes! Wifi Credentials:
                 </p>
-                <p>
-                    2. Here is the <a href="">Most Wanted List</a>.
-                </p>
-                <hr>
                 <dl>
                     <dt>SSID:</dt>
                     <dd>DocSprintWifi</dd>
                     <dt>WPA2:</dt>
-                    <dd>letsgetshitdone</dd>   
+                    <dd>letsgetshitdone!</dd>   
                 </dl>
                 <hr>
                 <p>
-                    Please do not leave your valuables unattended in the classroom!
+                    1. Add your Webplatform.org Username to the Spreadsheet at <strong>bit.ly/0spERtb</strong>
+                </p>
+                <p>
+                    2. Pick your task from the Most Wanted List at <strong>bit.ly/PPbwX1e</strong>
+                </p>
+                <p>
+                    3. Add your current task to the Tracking Sheet at <strong>bit.ly/Tr3ck1e</strong>
                 </p>
                 <hr>
                 <p>
-                    Organize your own Doc Sprint using the <a href="">Doc Sprint in a Box</a>!
+                    <strong>If you need help</strong> don't hesitate to contact your neighbor or one of the experts floating around the room at any time!
+                </p>
+                <hr>
+                <p>
+                    Please do not leave your valuables unattended in the classroom
                 </p>
             </div>
             
             <div id="socialpod" class="podregular">
                 <h2>
-                    Social Pod
+                    Your own Doc Sprint?
                 </h2>
                 <p>
-                    This is a pod where social stuff could be streamed to:
+                    We have everything you need to kick off your own Doc Sprint in your community, Meetup or Usergroup!
                 </p>
                 <p>
-                    * Tweet, tweet, tweet!
-                </p>
-                <p>
-                    * Tweet, tweet!
+                    Contact @klick_ass for more info!
                 </p>
             </div>
             
         </aside>
         
         <section>
+            
+            <!-- Dashboard Controls -->
+            <div id="controls" class="controls">
+                <h2>
+                    Configure your Web Platform Doc Sprint Dashboard
+                </h2>
+                <p>
+                    Please provide the relevant data to autofetch the statistics data.<br>
+                    Also fiddle on all these knobs to control the desired output of gauges and graphs. Have fun!
+                </p>
+                <table border="0">
+                    <tr>
+                        <td><label for="wpuserid">Your Doc Sprint ID:</label></td>
+                        <td><input name="wpuserid" type="text" class="input blur" value="Berlin20130208"></td>
+                        <td><label for="cycle">Autocycle Frequency:</label></td>
+                        <td><input name="cycle" type="range" min="5000" max="300000" step="1000"></td>
+                        <td><span id="cyclefreq">5</span> Seconds</td>
+                    </tr>
+                    <tr>
+                        <td><label for="wpdocsprintid">Webplatform.org User ID:</label></td>
+                        <td><input name="wpdocsprintid" type="text" class="input blur" value="Klickass"></td>
+                        <td rowspan="3"><label for="cycle">Graphs to display:</label></td>
+                        <td rowspan="3" colspan="3">
+                            <input name="graph1" type="checkbox" checked> <label for="graph1">Edits per WPD Section</label><br>
+                            <input name="graph2" type="checkbox" checked> <label for="graph2">New bytes written vs. bytes deleted</label><br>
+                            <input name="graph3" type="checkbox"> <label for="graph3">Another Graph</label><br>
+                            <input name="graph4" type="checkbox"> <label for="graph4">Another Graph</label><br>
+                            <input name="graph5" type="checkbox"> <label for="graph5">Another Graph</label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><label for="wptimeframe">Doc Sprint Starts:</label></td>
+                        <td><input name="wpdocsprintstarts" type="datetime"></td>
+                    </tr>
+                    <tr>
+                        <td><label for="wptimeframe">Doc Sprint Ends:</label></td>
+                        <td><input name="wpdocsprintends" type="datetime"></td>
+                    </tr>
+                    <tr>
+                        <td><label for="wpuserlist">URL UserIDs-Spreadsheet:</label></td>
+                        <td colspan="4"><input name="wpuserlist" type="text" class="input wpuserlist" value="https://docs.google.com/spreadsheet/ccc?key=0Ai6zxGBNLLIQdG10eHhrQ0lOMVhmanZ2Q3dUWUwxQ0E"></td>
+                    </tr>
+                </table>
+                <input type="button" value="Unblur Settings (check Projector Status first!)" class="unblurbutton" onclick="$('.blur').css('-webkit-filter', 'blur(0px)');">
+                <input type="button" value="Accept &amp; Dismiss Panel" class="button" onclick="$('#controls').hide(); $('.blur').css('-webkit-filter', 'blur(5px)');">
+            </div>
+            
+            <!-- The Gauge -->
+            <img src="./img/wrench.svg" width="40px" align="right" onclick="$('#controls').show();">
             <h2 class="headline"><!-- placeholder for gauge headline --></h2>
             <hr>
             <div id="placeholder" style="width:100%;height:90%;"></div>
-            <p class="message"></p>
+
         </section>
         
         <!-- load scripts -->
