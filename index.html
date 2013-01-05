@@ -87,39 +87,47 @@
                 </p>
                 <table border="0">
                     <tr>
-                        <td><label for="wpuserid">Your Doc Sprint ID:</label></td>
-                        <td><input name="wpuserid" type="text" class="input blur" value="Berlin20130208"></td>
+                        <td><label for="wptimeframe">Doc Sprint Starts:</label></td>
+                        <td><input name="wpdocsprintstarts" id="wpdocsprintstarts" type="datetime" value="2012-12-11T00:00:00Z"></td>
+                        
                         <td><label for="cycle">Autocycle Frequency:</label></td>
-                        <td><input name="cycle" type="range" min="5000" max="300000" step="1000"></td>
+                        <td><input name="cycle" name="id" type="range" min="5000" max="300000" step="1000"></td>
                         <td><span id="cyclefreq">5</span> Seconds</td>
                     </tr>
                     <tr>
-                        <td><label for="wpdocsprintid">Webplatform.org User ID:</label></td>
-                        <td><input name="wpdocsprintid" type="text" class="input blur" value="Klickass"></td>
+                        <td><label for="wptimeframe">Doc Sprint Ends:</label></td>
+                        <td><input name="wpdocsprintends" id="wpdocsprintends" type="datetime" value="2012-12-12T17:18:19Z"></td>
+                        
                         <td rowspan="3"><label for="cycle">Graphs to display:</label></td>
                         <td rowspan="3" colspan="3">
-                            <input name="graph1" type="checkbox" checked> <label for="graph1">Edits per WPD Section</label><br>
-                            <input name="graph2" type="checkbox" checked> <label for="graph2">New bytes written vs. bytes deleted</label><br>
-                            <input name="graph3" type="checkbox"> <label for="graph3">Another Graph</label><br>
-                            <input name="graph4" type="checkbox"> <label for="graph4">Another Graph</label><br>
-                            <input name="graph5" type="checkbox"> <label for="graph5">Another Graph</label>
+                            <input name="graph1" id="graph1" type="checkbox" checked> <label for="graph1">Edits per WPD Section</label><br>
+                            <input name="graph2" id="graph2" type="checkbox" checked> <label for="graph2">New bytes written vs. bytes deleted</label><br>
+                            <input name="graph3" id="graph3" type="checkbox"> <label for="graph3">Another Graph</label><br>
+                            <input name="graph4" id="graph4" type="checkbox"> <label for="graph4">Another Graph</label><br>
+                            <input name="graph5" id="graph5" type="checkbox"> <label for="graph5">Another Graph</label>
                         </td>
                     </tr>
                     <tr>
-                        <td><label for="wptimeframe">Doc Sprint Starts:</label></td>
-                        <td><input name="wpdocsprintstarts" type="datetime"></td>
+                        <td><label for="userskey">UserIDs-Spreadsheet Key:</label></td>
+                        <td><input name="userskey" id="userskey" type="text" class="input userskey" value="0Ai6zxGBNLLIQdG10eHhrQ0lOMVhmanZ2Q3dUWUwxQ0E"></td>
                     </tr>
                     <tr>
-                        <td><label for="wptimeframe">Doc Sprint Ends:</label></td>
-                        <td><input name="wpdocsprintends" type="datetime"></td>
+                        <td><label for="usersworksheet">Users Worksheet:</label></td>
+                        <td>
+                            <select name="usersworksheet" id="usersworksheet">
+                            </select>
+                        </td>
                     </tr>
                     <tr>
-                        <td><label for="wpuserlist">URL UserIDs-Spreadsheet:</label></td>
-                        <td colspan="4"><input name="wpuserlist" type="text" class="input wpuserlist" value="https://docs.google.com/spreadsheet/ccc?key=0Ai6zxGBNLLIQdG10eHhrQ0lOMVhmanZ2Q3dUWUwxQ0E"></td>
+                        <td><label for="userscolumn">Users Column:</label></td>
+                        <td>
+                            <select name="userscolumn" id="userscolumn">
+                            </select>
+                        </td>
                     </tr>
                 </table>
-                <input type="button" value="Unblur Settings (check Projector Status first!)" class="unblurbutton" onclick="$('.blur').css('-webkit-filter', 'blur(0px)');">
-                <input type="button" value="Accept &amp; Dismiss Panel" class="button" onclick="$('#controls').hide(); $('.blur').css('-webkit-filter', 'blur(5px)');">
+                <!--input type="button" value="Unblur Settings (check Projector Status first!)" class="unblurbutton" onclick="$('.blur').css('-webkit-filter', 'blur(0px)');"-->
+                <input type="button" id="acceptSettings" value="Accept &amp; Dismiss Panel" class="button" onclick="$('#controls').hide(); $('.blur').css('-webkit-filter', 'blur(5px)');">
             </div>
             
             <!-- The Gauge -->
@@ -131,7 +139,7 @@
         </section>
         
         <!-- load scripts -->
-        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.js"></script>
         <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.8.3.js"><\/script>')</script>
         <script src="js/jquery.flot.js"></script>
         <script src="js/main.js"></script>
@@ -140,7 +148,7 @@
         <script type="text/javascript">
             
             var timer = 5000;
-            genSections();
+            //genSections();
             
             function genSections () {
                 $(function () {
