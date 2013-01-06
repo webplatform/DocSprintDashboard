@@ -87,16 +87,16 @@
                 </p>
                 <table border="0">
                     <tr>
-                        <td><label for="wptimeframe">Doc Sprint Starts:</label></td>
-                        <td><input name="wpdocsprintstarts" id="wpdocsprintstarts" type="datetime" value="2012-12-11T00:00:00Z"></td>
+                        <td><label for="wpdocsprintstarts">Doc Sprint Starts:</label></td>
+                        <td><input name="wpdocsprintstarts" id="wpdocsprintstarts" class="input" type="datetime" value="2012-12-11T00:00:00Z"></td>
                         
                         <td><label for="cycle">Autocycle Frequency:</label></td>
                         <td><input name="cycle" name="id" type="range" min="5000" max="300000" step="1000"></td>
                         <td><span id="cyclefreq">5</span> Seconds</td>
                     </tr>
                     <tr>
-                        <td><label for="wptimeframe">Doc Sprint Ends:</label></td>
-                        <td><input name="wpdocsprintends" id="wpdocsprintends" type="datetime" value="2012-12-12T17:18:19Z"></td>
+                        <td><label for="wpdocsprintends">Doc Sprint Ends:</label></td>
+                        <td><input name="wpdocsprintends" id="wpdocsprintends" class="input" type="datetime" value="2012-12-12T17:18:19Z"></td>
                         
                         <td rowspan="3"><label for="cycle">Graphs to display:</label></td>
                         <td rowspan="3" colspan="3">
@@ -108,18 +108,18 @@
                         </td>
                     </tr>
                     <tr>
-                        <td><label for="userskey">UserIDs-Spreadsheet Key:</label></td>
+                        <td><label for="userskey">URL of Spreadsheet with WP-UserIDs:</label></td>
                         <td><input name="userskey" id="userskey" type="text" class="input userskey" value="0Ai6zxGBNLLIQdG10eHhrQ0lOMVhmanZ2Q3dUWUwxQ0E"></td>
                     </tr>
                     <tr>
-                        <td><label for="usersworksheet">Users Worksheet:</label></td>
+                        <td><label for="usersworksheet">Spreadsheet -> Select Worksheet:</label></td>
                         <td>
                             <select name="usersworksheet" id="usersworksheet">
                             </select>
                         </td>
                     </tr>
                     <tr>
-                        <td><label for="userscolumn">Users Column:</label></td>
+                        <td><label for="userscolumn">Spreadsheet -> Select Users Column:</label></td>
                         <td>
                             <select name="userscolumn" id="userscolumn">
                             </select>
@@ -130,10 +130,25 @@
                 <input type="button" id="acceptSettings" value="Accept &amp; Dismiss Panel" class="button" onclick="$('#controls').hide(); $('.blur').css('-webkit-filter', 'blur(5px)');">
             </div>
             
-            <!-- The Gauge -->
+            <!-- Dashboard Header -->
             <img src="./img/wrench.svg" width="40px" align="right" onclick="$('#controls').show();">
-            <h2 class="headline"><!-- placeholder for gauge headline --></h2>
+            <h2 class="headline"><!-- placeholder for gauge headline -->&nbsp;</h2>
             <hr>
+            
+            <!-- Messages Bucket -->
+            <div id="messages" class="messages">
+                <h3>
+                    Something did not go as smooth as expected! :-O
+                </h3>
+                <p class="errormsg">
+                    <!-- overwrite this paragraph using $(".errormsg").text("yourmessagehere"); -->
+                    This text should have been replaced by a meaningful errormessage - since you can read it there's a bug with the errorhandling.
+                    <br><strong>How embarrassing!</strong>
+                </p>
+                <input type="button" id="acceptMessages" value="Dismiss Message" class="button" onclick="$('#messages').hide();">
+            </div>
+            
+            <!-- Dashboard Gauge(s) -->
             <div id="placeholder" style="width:100%;height:90%;"></div>
 
         </section>

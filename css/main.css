@@ -152,6 +152,27 @@ section {
             margin: 1.5em 0 0 0.75em;
         }
 
+    .messages {
+        background: #E2E3E4;
+        border-radius: 5px;
+        box-shadow: 0px 0px 1px #000;
+        padding: 1em;
+        margin-bottom: 3em;
+        display: block;
+    }
+
+        #messages h3, #messages p {
+            color: #EE677E;
+        }
+
+        #messages .button {
+            font-family: 'Gudea', sans-serif;
+            color: #fff;
+            background-color: #356A84;
+            border-radius: 5px;
+            margin: 0.5em 0 0 0;
+        }
+
 h1 {
     font-family: 'Bitter', serif;
 }
@@ -159,6 +180,11 @@ h1 {
 h2 {
     font-family: 'Bitter', serif;
     margin: 0;
+}
+
+h3 {
+    font-family: 'Bitter', serif;
+    margin-top: 0em;
 }
 
 dt {
