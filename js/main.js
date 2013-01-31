@@ -75,7 +75,11 @@ var dsRefreshTimer;
 var dsInvalidUsersTimer;
 var dsGraphTimer;
 var dsGraphTimeout;
+var dsGraphCurrentCycle;
+var dsGraphTimerDelay = 1000;
+var dsGraphTimerEasing = "swing"; // linear, swing
 var dsCurrentGraph;
+var dsSettingsLoaded;
 
 function createUniqueId() {
   return (new Date()).getTime() + "_" + Math.random().toFixed(10).substr(2);
@@ -144,8 +148,10 @@ function onChangedKey() {
       value: ""
     }).text(""));
     for (var sheet in data) usersworksheet.append($("<option/>", {
-      value: data[sheet].id
+      value: data[sheet].id,
+      selected: dsSettings.sheet == data[sheet].id
     }).text(data[sheet].name));
+    if ($("#usersworksheet").val()) $("#usersworksheet").change();
   });
 }
 
@@ -157,9 +163,11 @@ function onChangedWorksheet() {
     userscolumn.append($("<option/>", {
       value: "-1"
     }).text(""));
-    for (var sheet in data) userscolumn.append($("<option/>", {
-      value: sheet
-    }).text(data[sheet]));
+    for (var column in data) userscolumn.append($("<option/>", {
+      value: column * 1 + 1,
+      selected: dsSettings.column == (column * 1 + 1)
+    }).text(data[column]));
+    if ($("#userscolumn").val()) $("#userscolumn").change();
   }, {
     "min-row": 1,
     "max-row": 1
@@ -278,6 +286,7 @@ function checkSettings(event) {
   
   if (!event || id == "wpdocsprintstarts") {
     var start = $("#wpdocsprintstarts").val();
+    dsSettings.startstr = start;
     var m1 = start.match(dateFormat1Regex);
     var m2 = start.match(dateFormat2Regex);
     if (m1 || m2) {
@@ -292,6 +301,7 @@ function checkSettings(event) {
   
   if (!event || id == "wpdocsprintends") {
     var end = $("#wpdocsprintends").val();
+    dsSettings.endstr = end;
     var m1 = end.match(dateFormat1Regex);
     var m2 = end.match(dateFormat2Regex);
     if (m1 || m2) {
@@ -322,9 +332,9 @@ function checkSettings(event) {
   
   if (!event || id == "usersworksheet" || id == "userskey") {
     var sheet = $("#usersworksheet").val();
+    if (id == "usersworksheet") dsSettings.sheet = sheet;
     if (sheet != null && sheet.length > 0) {
       $("#label_usersworksheet").removeClass("invalid");
-      dsSettings.sheet = sheet;
       onChangedWorksheet();
     } else {
       $("#label_usersworksheet").addClass("invalid");
@@ -335,9 +345,9 @@ function checkSettings(event) {
   
   if (!event || id == "userscolumn" || id == "usersworksheet" || id == "userskey") {
     var column = $("#userscolumn").val();
+    if (id == "userscolumn") dsSettings.column = column * 1;
     if (column != null && column != "-1") {
       $("#label_userscolumn").removeClass("invalid");
-      dsSettings.column = column * 1;
       onChangedColumn();
     } else {
       $("#label_userscolumn").addClass("invalid");
@@ -368,12 +378,11 @@ function checkSettings(event) {
     else delete dsSettings.graphs_enabled[id.substring("check_".length)];
   }
   
-  if (invalid) $("#wrench").addClass("invalid");
+  if (invalid) $("#wrench, #acceptSettings").addClass("invalid");
   else if ($("#controls label.invalid").length == 0) {
-    $("#wrench").removeClass("invalid");
-    
-    // TODO: save settings
+    $("#wrench, #acceptSettings").removeClass("invalid");
   }
+  if (dsSettingsLoaded) save_settings();
 }
 
 function updateCycleFreq() {
@@ -384,11 +393,15 @@ function updateCycleFreq() {
 }
 
 function checkGraphTimeout() {
+  var percent = 100;
+  if (dsGraphCurrentCycle && graphs.length && isFinite(dsGraphTimeout)) percent = (dsGraphTimeout - dsGraphTimerDelay) / dsGraphCurrentCycle * 100;
+  if (percent >= 0 && percent < 100) $("#progress_overlay").animate({ width: percent + "%" }, dsGraphTimerDelay - 50, dsGraphTimerEasing);
   if (!dsSettings.graph_timeout || graphs.length == 0) return;
-  if (!dsGraphTimeout || (dsGraphTimeout -= 1000) <= 0) {
-    dsGraphTimeout = dsSettings.graph_timeout;
+  if (!dsGraphTimeout || (dsGraphTimeout -= dsGraphTimerDelay) < 0) {
+    if (isFinite(dsGraphTimeout)) $("#progress_overlay").animate({ width: "0" }, dsGraphTimerDelay - 50, dsGraphTimerEasing);
+    dsGraphCurrentCycle = (dsGraphTimeout = dsSettings.graph_timeout);
     var currentIndex = graphs.indexOf(dsCurrentGraph);
-    for (var nextIndex = currentIndex + 1; currentIndex != -1 && nextIndex != currentIndex; nextIndex++) {
+    for (var nextIndex = currentIndex + 1; nextIndex != currentIndex; nextIndex++) {
       if (nextIndex >= graphs.length) {
         nextIndex = -1;
         continue;
@@ -399,6 +412,7 @@ function checkGraphTimeout() {
       break;
     }
     var nextGraph = graphs[nextIndex];
+    $("#progress_overlay").stop(true, true).css("width", "100%");
     if (typeof(nextGraph.update) == "function") nextGraph.update();
     var showNewGraph = function showNewGraph() {
       $("#graph_headline").text(nextGraph.title);
@@ -410,17 +424,45 @@ function checkGraphTimeout() {
   }
 }
 
-$(function() {
-  writePossibleGraphs();
-  $("#possible_graphs input[type='checkbox']").prop("checked", true);
-  
-  // TODO: load settings
-  
-  $("#controls").on("change", checkSettings);
+function save_settings() {
+  localStorage.settings = JSON.stringify(dsSettings);
+}
+
+function load_settings() {
+  if (localStorage.settings) {
+    dsSettings = JSON.parse(localStorage.settings);
+    $("#wpdocsprintstarts").val(dsSettings.startstr);
+    $("#wpdocsprintends").val(dsSettings.endstr);
+    $("#userskey").val(dsSettings.keyUrl);
+    $("#cycle").val(dsSettings.graph_timeout);
+    for (var k in dsSettings.graphs_enabled) {
+      var ele = $("#check_" + k);
+      if (ele.length == 0) delete dsSettings[k];
+      else ele.prop("checked", true);
+    }
+  }
   checkSettings();
-  
-  dsGraphTimer = setInterval(checkGraphTimeout, 1000);
+  dsSettingsLoaded = true;
+  dsGraphTimer = setInterval(checkGraphTimeout, dsGraphTimerDelay);
   dsInvalidUsersTimer = setInterval(checkInvalidUsers, invalidUsersInterval);
   dsRefreshTimer = setTimeout(refreshData, refreshInterval);
+}
+
+function onProgressClick() {
+  dsGraphTimeout = 0;
+}
+
+$(function() {
+  writePossibleGraphs();
+  
+  $("#controls").on("change", checkSettings);
+  load_settings();
+  
+  $("#progress_container").on("click", onProgressClick);
 });
 /*\ -- core end -- /*/
+
+function morph_height(num) {
+  $("#progress_container, #progress_overlay, #progress").css("height", num + "px");
+  $("#progress_line").css("height", Math.floor(num / 2) + "px");
+}

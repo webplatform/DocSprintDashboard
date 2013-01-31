@@ -42,10 +42,10 @@
                 </dl>
                 <hr>
                 <p>
-                    1. Register your WebPlatform.org Username to this dashboard: <strong>wp.mx/tracking</strong>
+                    1. Register your WebPlatform.org Username to this dashboard: <strong>wpd.mx/tracking</strong>
                 </p>
                 <p>
-                    2. Review helpful information &amp; find mentioned links here: <strong>wp.mx/berlin</strong>
+                    2. Review helpful information &amp; find mentioned links here: <strong>wpd.mx/berlin</strong>
                 </p>
                 <p>
                     3. Let the experts know what you're working on to help avoid overlap!
@@ -132,7 +132,14 @@
             <!-- Dashboard Header -->
             <img id="wrench" src="./img/wrench.svg" width="40px" align="right" onclick="$('#controls').show();">
             <h2 class="headline" id="graph_headline"><!-- placeholder for gauge headline -->&nbsp;</h2>
-            <hr>
+            <div id="progress_container">
+                <div id="progress">
+                    <div id="progress_bar"></div>
+                </div>
+                <div id="progress_overlay">
+                    <div id="progress_line"></div>
+                </div>
+            </div>
             
             <!-- Messages Bucket -->
             <div id="messages" class="messages">
