@@ -101,9 +101,9 @@
                         <td><label id="label_wpdocsprintends" for="wpdocsprintends">Doc Sprint Ends:</label></td>
                         <td><input name="wpdocsprintends" id="wpdocsprintends" class="input" type="datetime" value="2012-12-12 17:18"></td>
                         
-                        <td rowspan="3"><label for="cycle">Graphs to display:</label></td>
+                        <td rowspan="3"><label for="cycle">Slides to display:</label></td>
                         <td rowspan="3" colspan="3">
-                            <div id="possible_graphs"><!-- filled via JS --></div>
+                            <div id="possible_slides"><!-- filled via JS --></div>
                         </td>
                     </tr>
                     <tr>
@@ -131,7 +131,7 @@
             
             <!-- Dashboard Header -->
             <img id="wrench" src="./img/wrench.svg" width="40px" align="right" onclick="$('#controls').show();">
-            <h2 class="headline" id="graph_headline"><!-- placeholder for gauge headline -->&nbsp;</h2>
+            <h2 class="headline" id="slide_headline"><!-- placeholder for gauge headline -->&nbsp;</h2>
             <div id="progress_container">
                 <div id="progress">
                     <div id="progress_bar"></div>
@@ -155,17 +155,20 @@
             </div>
             
             <!-- Dashboard Gauge(s) -->
-            <div id="graph_container">
-                <div id="dsGraph_textOnly" class="graph">
+            <div id="slides_container">
+                <div id="dsSlide_default" class="slide">
+                    There is currently nothing to be displayed.
+                </div>
+                <div id="dsSlide_textOnly" class="slide">
                     Text Text Text...
                 </div>
                 
-                <div id="dsGraph_invalidUsers" class="graph">
+                <div id="dsSlide_invalidUsers" class="slide">
                     Invalid Users...
                 </div>
                 
-                <div id="dsGraph_allEdits" class="graph">
-                    Edit Graph!
+                <div id="dsSlide_allEdits" class="slide">
+                    <div id="dsSlide_allEdits_graph" class="graph"></div>
                 </div>
             </div>
 
@@ -175,6 +178,8 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.js"></script>
         <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.8.3.js"><\/script>')</script>
         <script src="js/jquery.flot.js"></script>
+        <script src="js/jquery.flot.resize.js"></script>
+        <script src="js/jquery.flot.categories.js"></script>
         <script src="js/main.js"></script>
         
     </body>
