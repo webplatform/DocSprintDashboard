@@ -8,8 +8,8 @@
 // (optional) show: should the slide be shown? returns true|false (e.g. no invalid users slide if there are none)
 // (optional) update: callback for refreshing the slide, called right before it's displayed (not needed for text-only slides)
 var slides = [{
-  name: "Text Only Example",
-  title: "Just some Text...",
+  name: "Agenda",
+  title: "Agenda",
   id: "dsSlide_textOnly"
 }, {
   name: "Invalid Users",
@@ -475,7 +475,7 @@ function checkSlideTimeout() {
     }
     $("#progress_overlay").stop(true, true).css("width", "100%");
     if (possibleSlides.length == 0) {
-      $("#slide_headline").text("Nothing to show yet...");
+      $("#slide_headline").text("No slides to display!");
       var showDefaultSlide = function showDefaultSlide() {
         $("#dsSlide_default").fadeIn();
         dsCurrentSlide = undefined;
