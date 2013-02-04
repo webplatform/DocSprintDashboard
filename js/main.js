@@ -18,18 +18,33 @@ var slides = [{
   show: dsSlide_invalidUsers_show,
   update: dsSlide_invalidUsers_update
 }, {
-  name: "All Edits",
+  name: "DocSprint Edits",
   title: "Edits from all DocSprint Users",
   id: "dsSlide_allEdits",
   show: dsSlide_allEdits_show,
   update: dsSlide_allEdits_update
+}, {
+  name: "Lifetime Edits",
+  title: "Lifetime Edits",
+  id: "dsSlide_lifetime",
+  show: dsSlide_lifetime_show,
+  update: dsSlide_lifetime_update
+}, {
+  name: "Old / New Accounts",
+  title: "Old / New Accounts",
+  id: "dsSlide_accounts",
+  show: dsSlide_accounts_show,
+  update: dsSlide_accounts_update
+}, {
+  name: "Genders",
+  title: "Genders",
+  id: "dsSlide_genders",
+  show: dsSlide_genders_show,
+  update: dsSlide_genders_update
 }];
 
 // retrieving users and getting MW data
 var refreshInterval = 5 * 60 * 1000; // 5m
-
-// checking for invalid users and newly registered accounts
-var usersMetaInterval = 15 * 60 * 1000; // 15m
 
 /*\ -- config end -- /*/
 
@@ -39,6 +54,14 @@ var usersMetaInterval = 15 * 60 * 1000; // 15m
 
 // Invalid Users
 function dsSlide_invalidUsers_update() {
+  var html = "<ul>";
+  for (var i = 0; i < dsInvalidUsers.length && i < 20; i++) {
+    html += "<li>";
+    html += dsInvalidUsers[i].name;
+    html += "</li>";
+  }
+  html += "</ul>";
+  $("#dsSlide_invalidUsers").html(html);
 }
 function dsSlide_invalidUsers_show() {
   return dsInvalidUsers.length > 0;
@@ -56,7 +79,7 @@ function dsSlide_allEdits_update() {
   };
   for (var i = 0; i < 3 && i < dsUsersByNumEdits.length; i++) {
     var user = dsUsersByNumEdits[i];
-    data[0].data.push([ user.name, user.numEdits]);
+    data[0].data.push([ user.name, user.numEdits ]);
   }
   var options = {
     series: {
@@ -70,11 +93,109 @@ function dsSlide_allEdits_update() {
       mode: "categories",
       autoscaleMargin: 0.1,
       tickLength: 0
+    },
+    yaxis: {
+      tickDecimals: 0
     }
   };
   var plot = $.plot($("#dsSlide_allEdits_graph"), data, options);
 }
 
+function dsSlide_lifetime_show() {
+  return dsUsersByLifetimeEdits.length > 0;
+}
+function dsSlide_lifetime_update() {
+  var data = [];
+  data[0] = {
+    color: "#694D9F",
+    data: []
+  };
+  for (var i = 0; i < 3 && i < dsUsersByLifetimeEdits.length; i++) {
+    var user = dsUsersByLifetimeEdits[i];
+    data[0].data.push([ user.name, user.lifetimeEdits ]);
+  }
+  var options = {
+    series: {
+      bars: {
+        show: true,
+        barWidth: 0.5,
+        align: "center"
+      }
+    },
+    xaxis: {
+      mode: "categories",
+      autoscaleMargin: 0.1,
+      tickLength: 0
+    },
+    yaxis: {
+      tickDecimals: 0
+    }
+  };
+  var plot = $.plot($("#dsSlide_lifetime_graph"), data, options);
+}
+
+function dsSlide_accounts_show() {
+  return dsUserAccounts.old > 0 || dsUserAccounts.new > 0;
+}
+function dsSlide_accounts_update() {
+  var data = [];
+  data[0] = {
+    color: "#E54E27",
+    data: []
+  };
+  data[0].data.push([ "old", dsUserAccounts.old ]);
+  data[0].data.push([ "new", dsUserAccounts.new ]);
+  var options = {
+    series: {
+      bars: {
+        show: true,
+        barWidth: 0.5,
+        align: "center"
+      }
+    },
+    xaxis: {
+      mode: "categories",
+      autoscaleMargin: 0.1,
+      tickLength: 0
+    },
+    yaxis: {
+      tickDecimals: 0
+    }
+  };
+  var plot = $.plot($("#dsSlide_accounts_graph"), data, options);
+}
+
+function dsSlide_genders_show() {
+  return dsUserGenders.male > 0 || dsUserGenders.female > 0;
+}
+function dsSlide_genders_update() {
+  var data = [];
+  data[0] = {
+    color: "#D02E27",
+    data: []
+  };
+  data[0].data.push([ "unknown", dsUserGenders.unknown ]);
+  data[0].data.push([ "male", dsUserGenders.male ]);
+  data[0].data.push([ "female", dsUserGenders.female ]);
+  var options = {
+    series: {
+      bars: {
+        show: true,
+        barWidth: 0.5,
+        align: "center"
+      }
+    },
+    xaxis: {
+      mode: "categories",
+      autoscaleMargin: 0.1,
+      tickLength: 0
+    },
+    yaxis: {
+      tickDecimals: 0
+    }
+  };
+  var plot = $.plot($("#dsSlide_genders_graph"), data, options);
+}
 /*\ -- slide implementations end -- /*/
 
 
@@ -88,10 +209,18 @@ var dateFormatApiRegex = /^(\d+)-(\d+)-(\d+)T(\d+):(\d+):(\d+)Z$/; // 2012-12-24
 
 var dsUsers = {};
 var dsUsersByNumEdits = [];
+var dsUsersByLifetimeEdits = [];
+var dsUserGenders = {};
+var tmpUserGenders = {};
+var dsUserAccounts = {};
+var tmpUserAccounts = {};
 var dsInvalidUsers = [];
+var tmpInvalidUsers;
+var dsUsersMetaBatchCount = 50;
 var dsChanges = [];
 var dsStats = {};
 var tmpUsers;
+var tmpUsersForMeta;
 var tmpStats;
 var tmpChanges;
 var dsSettings = {
@@ -105,7 +234,6 @@ var dsSettings = {
   slides_enabled: {}
 };
 var dsRefreshTimer;
-var dsUsersMetaTimer;
 var dsSlideTimer;
 var dsSlideTimeout;
 var dsSlideCurrentCycle;
@@ -113,6 +241,18 @@ var dsSlideTimerDelay = 1000;
 var dsSlideTimerEasing = "swing"; // linear, swing
 var dsCurrentSlide;
 var dsSettingsLoaded;
+var dummyUser = {
+  name: "?",
+  numEdits: 0,
+  bytesAdded: 0,
+  bytesRemoved: 0,
+  lifetimeEdits: 0,
+  gender: undefined,
+  registrationDate: undefined,
+  newlyRegistered: undefined,
+  id: undefined,
+  unknown: true
+};
 
 function createUniqueId() {
   return (new Date()).getTime() + "_" + Math.random().toFixed(10).substr(2);
@@ -216,7 +356,7 @@ function fetchUsers(done) {
   if (!dsSettings.key || !dsSettings.sheet || !(dsSettings.column >= 0)) return;
   getCellsFromWorksheet(dsSettings.key, dsSettings.sheet, function(data) {
     var tmpUsers = {};
-    for (var i in data) tmpUsers[data[i]] = { name: i, numEdits: 0, bytesAdded: 0, bytesRemoved: 0 };
+    for (var i in data) tmpUsers[data[i].toLowerCase()] = $.extend({}, dummyUser, { name: i });
     dsUsers = tmpUsers;
     if (typeof(done) == "function") done();
   }, {
@@ -240,9 +380,9 @@ function fetchChanges(from, to, done) {
     
     for (var i in data.query.recentchanges) {
       var rc = data.query.recentchanges[i];
+      if (tmpUsers[rc.user.toLowerCase()] == undefined) continue;
       tmpChanges.push(rc);
-      if (tmpUsers[rc.user] == undefined) continue;
-      var user = tmpUsers[rc.user];
+      var user = tmpUsers[rc.user.toLowerCase()];
       user.numEdits++;
       tmpStats.numEdits++;
       if (typeof(rc.oldlen) == "number") {
@@ -265,34 +405,101 @@ function fetchChanges(from, to, done) {
   insertScript(url, funcName);
 }
 
-function checkUsersMeta() {
-  // fetch user meta (iterate batches)
-  // exists?
-  // newly registered?
+function checkUsersMeta(done, startIndex) {
+  if (startIndex == undefined) {
+    tmpInvalidUsers = [];
+    tmpUsersForMeta = $.extend([], dsUsers);
+    startIndex = 0;
+    tmpUserGenders =  { male: 0, female: 0, unknown: 0 };
+    tmpUserAccounts = { old: 0, "new": 0 };
+  }
+  
+  var usersMetaBatch = {};
+  var c = 0;
+  for (var cu in tmpUsersForMeta) {
+    usersMetaBatch[cu] = tmpUsersForMeta[cu];
+    delete tmpUsersForMeta[cu];
+    if (c++ >= dsUsersMetaBatchCount) break;
+  }
+  
+  var funcName = "checkUsersMeta_" + startIndex + "_" + createUniqueId();
+  var url = "http://docs.webplatform.org/w/api.php?";
+  url += "action=query&list=users&usprop=blockinfo|editcount|registration|gender";
+  url += "&ususers=";
+  for (var u in usersMetaBatch) url += encodeURIComponent(u + "|");
+  url = url.replace(/(\||%7C)$/i, "");
+  url += "&format=json&callback=" + funcName;
+  window[funcName] = function(data) {
+    window.scriptrefs[funcName].remove();
+    delete window.scriptrefs[funcName];
+    delete window[funcName];
+    
+    for (var user in data.query.users) {
+      user = data.query.users[user];
+      var tmpUser = tmpUsers[user.name.toLowerCase()];
+      if (tmpUser == undefined) continue;
+      tmpUser.id = user.userid;
+      tmpUser.name = user.name;
+      tmpUser.lifetimeEdits = user.editcount || 0;
+      tmpUser.gender = user.gender == "unknown" ? undefined : user.gender;
+      tmpUser.registrationDate = user.registration ? parseDate(user.registration) : undefined;
+      if (user.registration) tmpUser.newlyRegistered = tmpUser.registrationDate >= dsSettings.start && tmpUser.registrationDate <= dsSettings.end;
+      else tmpUser.newlyRegistered = undefined;
+      tmpUser.unknown = user.missing == "" || user.invalid == "";
+      if (tmpUser.unknown) tmpInvalidUsers.push(tmpUser);
+    }
+    
+    if (tmpUsersForMeta.length > 0) {
+      checkUsersMeta(function onUsersMetaDone() {
+        if (typeof(done) == "function") done();
+      }, startIndex + dsUsersMetaBatchCount);
+    } else if (typeof(done) == "function") done();
+  };
+  insertScript(url, funcName);
 }
 
 function refreshData() {
   fetchUsers(function onFetchUsersDone() {
     tmpUsers = {};
     tmpChanges = [];
-    for (var i in dsUsers) tmpUsers[i] = { name: i, numEdits: 0, bytesAdded: 0, bytesRemoved: 0 };
+    for (var i in dsUsers) tmpUsers[i] = $.extend({}, dummyUser, { name: i });
     tmpStats = { numEdits: 0, bytesAdded: 0, bytesRemoved: 0 };
     if (dsSettings.start && dsSettings.end) {
       fetchChanges(formatDate(dsSettings.start), formatDate(dsSettings.end), function onFetchChangesDone() {
-        var tmpUsersByNumEdits = [];
-        for (var u in tmpUsers) {
-          if (tmpUsers[u].numEdits > 0) tmpUsersByNumEdits.push(tmpUsers[u]);
-        }
-        tmpUsersByNumEdits.sort(function(a, b) {
-          return a.numEdits < b.numEdits;
+        checkUsersMeta(function onUsersMetaDone() {
+          var tmpUsersByNumEdits = [];
+          var tmpUsersByLifetimeEdits = [];
+          for (var u in tmpUsers) {
+            var tmpUser = tmpUsers[u];
+            
+            if (tmpUser.numEdits > 0) tmpUsersByNumEdits.push(tmpUser);
+            
+            if (tmpUser.lifetimeEdits > 0) tmpUsersByLifetimeEdits.push(tmpUser);
+            
+            if (tmpUser.gender == "male") tmpUserGenders.male++;
+            else if (tmpUser.gender == "female") tmpUserGenders.female++;
+            else tmpUserGenders.unknown++;
+            
+            if (tmpUser.newlyRegistered) tmpUserAccounts.new++;
+            else tmpUserAccounts.old++;
+          }
+          tmpUsersByNumEdits.sort(function(a, b) {
+            return a.numEdits < b.numEdits;
+          });
+          tmpUsersByLifetimeEdits.sort(function(a, b) {
+            return a.lifetimeEdits < b.lifetimeEdits;
+          });
+          
+          dsUsers = tmpUsers;
+          dsStats = tmpStats;
+          dsChanges = tmpChanges;
+          dsUsersByNumEdits = tmpUsersByNumEdits;
+          dsInvalidUsers = tmpInvalidUsers;
+          dsUserGenders = tmpUserGenders;
+          dsUsersByLifetimeEdits = tmpUsersByLifetimeEdits;
+          dsUserAccounts = tmpUserAccounts;
+          if (!dsCurrentSlide) dsSlideTimeout = 0;
         });
-        
-        dsUsers = tmpUsers;
-        dsStats = tmpStats;
-        dsChanges = tmpChanges;
-        dsUsersByNumEdits = tmpUsersByNumEdits;
-        
-        if (!dsCurrentSlide) dsSlideTimeout = 0;
       });
     }
   });
@@ -518,7 +725,6 @@ function load_settings() {
   dsSettingsLoaded = true;
   refreshData();
   dsSlideTimer = setInterval(checkSlideTimeout, dsSlideTimerDelay);
-  dsUsersMetaTimer = setInterval(checkUsersMeta, usersMetaInterval);
   dsRefreshTimer = setTimeout(refreshData, refreshInterval);
 }
 
