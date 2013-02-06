@@ -13,25 +13,25 @@ var slides = [{
   id: "dsSlide_textOnly"
 }, {
   name: "Invalid Users",
-  title: "Invalid Users in Spreadsheet",
+  title: "Oooops - Typo Alert!",
   id: "dsSlide_invalidUsers",
   show: dsSlide_invalidUsers_show,
   update: dsSlide_invalidUsers_update
 }, {
   name: "DocSprint Edits",
-  title: "Edits from all DocSprint Users",
+  title: "Leaderboard: Users with most edits during Doc Sprint",
   id: "dsSlide_allEdits",
   show: dsSlide_allEdits_show,
   update: dsSlide_allEdits_update
 }, {
   name: "Lifetime Edits",
-  title: "Lifetime Edits",
+  title: "Lifetime Edits across all Doc Sprint Participants",
   id: "dsSlide_lifetime",
   show: dsSlide_lifetime_show,
   update: dsSlide_lifetime_update
 }, {
   name: "Old / New Accounts",
-  title: "Old / New Accounts",
+  title: "Doc Sprint timeframe: You guys vs. all other Contributors",
   id: "dsSlide_accounts",
   show: dsSlide_accounts_show,
   update: dsSlide_accounts_update
@@ -54,7 +54,8 @@ var refreshInterval = 5 * 60 * 1000; // 5m
 
 // Invalid Users
 function dsSlide_invalidUsers_update() {
-  var html = "<ul>";
+  var html = "<h3>Yo - we've retreived some invalid usernames from the spreadsheet.</h3><p>Holler at one of the event hosts to fix this and let the culprit pay the drinks tonight! ;)=</p><p>Here are the faulty doodz:</p>";
+  html += "<ul>";
   for (var i = 0; i < dsInvalidUsers.length && i < 20; i++) {
     html += "<li>";
     html += dsInvalidUsers[i].name;
@@ -143,8 +144,8 @@ function dsSlide_accounts_update() {
     color: "#E54E27",
     data: []
   };
-  data[0].data.push([ "old", dsUserAccounts.old ]);
-  data[0].data.push([ "new", dsUserAccounts.new ]);
+  data[0].data.push([ "World", dsUserAccounts.old ]);
+  data[0].data.push([ "YOU", dsUserAccounts.new ]);
   var options = {
     series: {
       bars: {
