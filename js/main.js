@@ -31,7 +31,7 @@ var slides = [{
   update: dsSlide_lifetime_update
 }, {
   name: "Old / New Accounts",
-  title: "Doc Sprint timeframe: You guys vs. all other Contributors",
+  title: "Doc Sprint Contributors: Old-Timers and Newcomers",
   id: "dsSlide_accounts",
   show: dsSlide_accounts_show,
   update: dsSlide_accounts_update
@@ -41,6 +41,24 @@ var slides = [{
   id: "dsSlide_genders",
   show: dsSlide_genders_show,
   update: dsSlide_genders_update
+}, {
+  name: "Edits Timeline",
+  title: "Doc Sprint edits",
+  id: "dsSlide_edits_timeline",
+  show: dsSlide_edits_timeline_show,
+  update: dsSlide_edits_timeline_update
+}, {
+  name: "Edit Areas",
+  title: "Edit Areas",
+  id: "dsSlide_edits_areas",
+  show: dsSlide_edits_areas_show,
+  update: dsSlide_edits_areas_update
+}, {
+  name: "Bytes added/removed",
+  title: "Bytes added/removed",
+  id: "dsSlide_bytes",
+  show: dsSlide_bytes_show,
+  update: dsSlide_bytes_update
 }];
 
 // retrieving users and getting MW data
@@ -54,7 +72,7 @@ var refreshInterval = 5 * 60 * 1000; // 5m
 
 // Invalid Users
 function dsSlide_invalidUsers_update() {
-  var html = "<h3>Yo - we've retreived some invalid usernames from the spreadsheet.</h3><p>Holler at one of the event hosts to fix this and let the culprit pay the drinks tonight! ;)=</p><p>Here are the faulty doodz:</p>";
+  var html = "<h3>Yo - we've retrieved some invalid usernames from the spreadsheet.</h3><p>Holler at one of the event hosts to fix this and let the culprit pay the drinks tonight! ;)=</p><p>Here are the faulty doodz:</p>";
   html += "<ul>";
   for (var i = 0; i < dsInvalidUsers.length && i < 20; i++) {
     html += "<li>";
@@ -144,8 +162,8 @@ function dsSlide_accounts_update() {
     color: "#E54E27",
     data: []
   };
-  data[0].data.push([ "World", dsUserAccounts.old ]);
-  data[0].data.push([ "YOU", dsUserAccounts.new ]);
+  data[0].data.push([ "Old-Timers", dsUserAccounts.old ]);
+  data[0].data.push([ "Newcomers", dsUserAccounts.new ]);
   var options = {
     series: {
       bars: {
@@ -197,6 +215,129 @@ function dsSlide_genders_update() {
   };
   var plot = $.plot($("#dsSlide_genders_graph"), data, options);
 }
+
+function dsSlide_edits_timeline_show() {
+  return dsArticleEdits.length > 0;
+}
+function dsSlide_edits_timeline_update() {
+  var data = [];
+  data[0] = {
+    color: "#F99D1C",
+    data: []
+  };
+  var edits = $.extend([], dsArticleEdits).reverse();
+  var sum = 0;
+  for (var i in edits) {
+    var rc = edits[i];
+    data[0].data.push([parseDate(rc.timestamp).getTime(), ++sum]);
+  }
+  var options = {
+    series: {
+      /*bars: {
+        show: true,
+        barWidth: 0.5,
+        align: "center"
+      }*/
+    },
+    xaxis: {
+      mode: "time"/*,
+      autoscaleMargin: 0.1,
+      tickLength: 0*/
+    },
+    yaxis: {
+      tickDecimals: 0
+    }
+  };
+  var plot = $.plot($("#dsSlide_edits_timeline_graph"), data, options);
+}
+
+function dsSlide_edits_areas_show() {
+  return dsArticleEdits.length > 0;
+}
+function dsSlide_edits_areas_update() {
+  var data = [];
+  var edits = $.extend([], dsArticleEdits);
+  var areas = { apis: 0, css: 0, other: 0 };
+  for (var i in edits) {
+    var rc = edits[i];
+    if (rc.title.match(/^apis\//i)) areas.apis++;
+    else if (rc.title.match(/^css\//i)) areas.css++;
+    else areas.other++;
+  }
+  var colors = {
+    apis: "#F99D1C",
+    css: "#30B4C5",
+    other: "#694D9F"
+  };
+  for (var a in areas) {
+    data.push({
+      label: a,
+      data: areas[a],
+      color: colors[a]
+    });
+  }
+  var options = {
+    series: {
+      pie: {
+        show: true,
+        radius: 1,
+        label: {
+          show: false,
+          radius: 3/4,
+          background: {
+            color: "#000000",
+            opacity: 0.75
+          }
+        }
+      }
+    },
+    legend: {
+      show: true
+    }
+  };
+  var plot = $.plot($("#dsSlide_edits_areas_graph"), data, options);
+}
+
+function dsSlide_bytes_show() {
+  return dsArticleEdits.length > 0;
+}
+function dsSlide_bytes_update() {
+  var data = [];
+  data[0] = {
+    color: "#30B4C5",
+    data: []
+  };
+  data[1] = {
+    color: "#D02E27",
+    data: []
+  }
+  var edits = $.extend([], dsArticleEdits).reverse();
+  var sum = 0;
+  for (var i in edits) {
+    var rc = edits[i];
+    var delta = rc.newlen - rc.oldlen;
+    if (delta > 0) data[0].data.push([parseDate(rc.timestamp).getTime(), delta]);
+    else if (delta < 0) data[1].data.push([parseDate(rc.timestamp).getTime(), delta * -1]);
+  }
+  var options = {
+    series: {
+      /*bars: {
+        show: true,
+        barWidth: 0.5,
+        align: "center"
+      }*/
+    },
+    xaxis: {
+      mode: "time"/*,
+      autoscaleMargin: 0.1,
+      tickLength: 0*/
+    },
+    yaxis: {
+      tickDecimals: 0
+    }
+  };
+  var plot = $.plot($("#dsSlide_bytes_graph"), data, options);
+}
 /*\ -- slide implementations end -- /*/
 
 
@@ -219,11 +360,13 @@ var dsInvalidUsers = [];
 var tmpInvalidUsers;
 var dsUsersMetaBatchCount = 50;
 var dsChanges = [];
+var dsArticleEdits = [];
 var dsStats = {};
 var tmpUsers;
 var tmpUsersForMeta;
 var tmpStats;
 var tmpChanges;
+var tmpArticleEdits;
 var dsSettings = {
   keyUrl: null,
   key: null,
@@ -394,6 +537,8 @@ function fetchChanges(from, to, done) {
           user.bytesRemoved += rc.oldlen - rc.newlen;
           tmpStats.bytesRemoved += rc.oldlen - rc.newlen;
         }
+        
+        if (rc.pageid && (rc.type == "new" || rc.type == "edit")) tmpArticleEdits.push(rc);
       }
     }
     
@@ -463,6 +608,7 @@ function refreshData() {
   fetchUsers(function onFetchUsersDone() {
     tmpUsers = {};
     tmpChanges = [];
+    tmpArticleEdits = [];
     for (var i in dsUsers) tmpUsers[i] = $.extend({}, dummyUser, { name: i });
     tmpStats = { numEdits: 0, bytesAdded: 0, bytesRemoved: 0 };
     if (dsSettings.start && dsSettings.end) {
@@ -499,6 +645,7 @@ function refreshData() {
           dsUserGenders = tmpUserGenders;
           dsUsersByLifetimeEdits = tmpUsersByLifetimeEdits;
           dsUserAccounts = tmpUserAccounts;
+          dsArticleEdits = tmpArticleEdits;
           if (!dsCurrentSlide) dsSlideTimeout = 0;
         });
       });
