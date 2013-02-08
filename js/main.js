@@ -42,8 +42,8 @@ var slides = [{
   show: dsSlide_lifetime_show,
   update: dsSlide_lifetime_update
 }, {
-  name: "Old / New Accounts",
-  title: "Doc Sprint Contributors: Old-Timers and Newcomers",
+  name: "Experienced / New Users Contributing in Sprint",
+  title: "Doc Sprint Contributors: Lab-Rats (old Users) vs. Adventurers (new Users)",
   id: "dsSlide_accounts",
   show: dsSlide_accounts_show,
   update: dsSlide_accounts_update
