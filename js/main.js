@@ -18,11 +18,23 @@ var slides = [{
   show: dsSlide_invalidUsers_show,
   update: dsSlide_invalidUsers_update
 }, {
+  name: "DocSprint Edits (List)",
+  title: "Leaderboard: Users with most edits during Doc Sprint",
+  id: "dsSlide_allEdits_list",
+  show: dsSlide_allEdits_show,
+  update: dsSlide_allEdits_list_update
+}, {
   name: "DocSprint Edits",
   title: "Leaderboard: Users with most edits during Doc Sprint",
   id: "dsSlide_allEdits",
   show: dsSlide_allEdits_show,
   update: dsSlide_allEdits_update
+}, {
+  name: "Lifetime Edits (List)",
+  title: "Lifetime Edits across all Doc Sprint Participants",
+  id: "dsSlide_lifetime_list",
+  show: dsSlide_lifetime_show,
+  update: dsSlide_lifetime_list_update
 }, {
   name: "Lifetime Edits",
   title: "Lifetime Edits across all Doc Sprint Participants",
@@ -96,7 +108,7 @@ function dsSlide_allEdits_update() {
     color: "#30B4C5",
     data: []
   };
-  for (var i = 0; i < 3 && i < dsUsersByNumEdits.length; i++) {
+  for (var i = 0; i < 5 && i < dsUsersByNumEdits.length; i++) {
     var user = dsUsersByNumEdits[i];
     data[0].data.push([ user.name, user.numEdits ]);
   }
@@ -119,6 +131,15 @@ function dsSlide_allEdits_update() {
   };
   var plot = $.plot($("#dsSlide_allEdits_graph"), data, options);
 }
+function dsSlide_allEdits_list_update() {
+  var html = "<ol>";
+  for (var i = 0; i < 20 && i < dsUsersByNumEdits.length; i++) {
+    var user = dsUsersByNumEdits[i];
+    html += "<li>" + user.name + " (" + user.numEdits + ")</li>";
+  }
+  html += "</ol>";
+  $("#dsSlide_allEdits_list").html(html);
+}
 
 function dsSlide_lifetime_show() {
   return dsUsersByLifetimeEdits.length > 0;
@@ -129,7 +150,7 @@ function dsSlide_lifetime_update() {
     color: "#694D9F",
     data: []
   };
-  for (var i = 0; i < 3 && i < dsUsersByLifetimeEdits.length; i++) {
+  for (var i = 0; i < 5 && i < dsUsersByLifetimeEdits.length; i++) {
     var user = dsUsersByLifetimeEdits[i];
     data[0].data.push([ user.name, user.lifetimeEdits ]);
   }
@@ -151,6 +172,15 @@ function dsSlide_lifetime_update() {
     }
   };
   var plot = $.plot($("#dsSlide_lifetime_graph"), data, options);
+}
+function dsSlide_lifetime_list_update() {
+  var html = "<ol>";
+  for (var i = 0; i < 20 && i < dsUsersByLifetimeEdits.length; i++) {
+    var user = dsUsersByLifetimeEdits[i];
+    html += "<li>" + user.name + " (" + user.lifetimeEdits + ")</li>";
+  }
+  html += "</ol>";
+  $("#dsSlide_lifetime_list").html(html);
 }
 
 function dsSlide_accounts_show() {
@@ -304,10 +334,12 @@ function dsSlide_bytes_show() {
 function dsSlide_bytes_update() {
   var data = [];
   data[0] = {
+    label: "added",
     color: "#30B4C5",
     data: []
   };
   data[1] = {
+    label: "removed",
     color: "#D02E27",
     data: []
   }
@@ -326,6 +358,9 @@ function dsSlide_bytes_update() {
         barWidth: 0.5,
         align: "center"
       }*/
+    },
+    legend: {
+      show: true
     },
     xaxis: {
       mode: "time"/*,
@@ -500,7 +535,7 @@ function fetchUsers(done) {
   if (!dsSettings.key || !dsSettings.sheet || !(dsSettings.column >= 0)) return;
   getCellsFromWorksheet(dsSettings.key, dsSettings.sheet, function(data) {
     var tmpUsers = {};
-    for (var i in data) tmpUsers[data[i].toLowerCase()] = $.extend({}, dummyUser, { name: i });
+    for (var i in data) tmpUsers[data[i]] = $.extend({}, dummyUser, { name: i });
     dsUsers = tmpUsers;
     if (typeof(done) == "function") done();
   }, {
@@ -631,10 +666,10 @@ function refreshData() {
             else tmpUserAccounts.old++;
           }
           tmpUsersByNumEdits.sort(function(a, b) {
-            return a.numEdits < b.numEdits;
+            return b.numEdits - a.numEdits;
           });
           tmpUsersByLifetimeEdits.sort(function(a, b) {
-            return a.lifetimeEdits < b.lifetimeEdits;
+            return b.lifetimeEdits - a.lifetimeEdits;
           });
           
           dsUsers = tmpUsers;
