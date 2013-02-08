@@ -559,9 +559,9 @@ function fetchChanges(from, to, done) {
     
     for (var i in data.query.recentchanges) {
       var rc = data.query.recentchanges[i];
-      if (tmpUsers[rc.user.toLowerCase()] == undefined) continue;
+      if (tmpUsers[rc.user] == undefined) continue;
       tmpChanges.push(rc);
-      var user = tmpUsers[rc.user.toLowerCase()];
+      var user = tmpUsers[rc.user];
       user.numEdits++;
       tmpStats.numEdits++;
       if (typeof(rc.oldlen) == "number") {
@@ -617,7 +617,7 @@ function checkUsersMeta(done, startIndex) {
     
     for (var user in data.query.users) {
       user = data.query.users[user];
-      var tmpUser = tmpUsers[user.name.toLowerCase()];
+      var tmpUser = tmpUsers[user.name];
       if (tmpUser == undefined) continue;
       tmpUser.id = user.userid;
       tmpUser.name = user.name;
