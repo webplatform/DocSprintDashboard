@@ -18,13 +18,13 @@ var slides = [{
   show: dsSlide_invalidUsers_show,
   update: dsSlide_invalidUsers_update
 }, {
-  name: "DocSprint Edits (List)",
+  name: "Doc Sprint Edits (List)",
   title: "Leaderboard: Users with most edits during Doc Sprint",
   id: "dsSlide_allEdits_list",
   show: dsSlide_allEdits_show,
   update: dsSlide_allEdits_list_update
 }, {
-  name: "DocSprint Edits",
+  name: "Doc Sprint Edits",
   title: "Leaderboard: Users with most edits during Doc Sprint",
   id: "dsSlide_allEdits",
   show: dsSlide_allEdits_show,
@@ -43,7 +43,7 @@ var slides = [{
   update: dsSlide_lifetime_update
 }, {
   name: "Experienced / New Users Contributing in Sprint",
-  title: "Doc Sprint Contributors: Lab-Rats (old Users) vs. Adventurers (new Users)",
+  title: "All Contributors: Lab-Rats (old Users) vs. Adventurers (new Users)",
   id: "dsSlide_accounts",
   show: dsSlide_accounts_show,
   update: dsSlide_accounts_update
@@ -55,13 +55,13 @@ var slides = [{
   update: dsSlide_genders_update
 }, {
   name: "Edits Timeline",
-  title: "Doc Sprint edits",
+  title: "Doc Sprint Edits",
   id: "dsSlide_edits_timeline",
   show: dsSlide_edits_timeline_show,
   update: dsSlide_edits_timeline_update
 }, {
-  name: "Edit Areas",
-  title: "Edit Areas",
+  name: "Edits by Work Group",
+  title: "Edits by Work Group",
   id: "dsSlide_edits_areas",
   show: dsSlide_edits_areas_show,
   update: dsSlide_edits_areas_update
@@ -132,7 +132,7 @@ function dsSlide_allEdits_update() {
   var plot = $.plot($("#dsSlide_allEdits_graph"), data, options);
 }
 function dsSlide_allEdits_list_update() {
-  var html = "<ol>";
+  var html = "<ol class=\"leaderboard\">";
   for (var i = 0; i < 20 && i < dsUsersByNumEdits.length; i++) {
     var user = dsUsersByNumEdits[i];
     html += "<li>" + user.name + " (" + user.numEdits + ")</li>";
@@ -174,7 +174,7 @@ function dsSlide_lifetime_update() {
   var plot = $.plot($("#dsSlide_lifetime_graph"), data, options);
 }
 function dsSlide_lifetime_list_update() {
-  var html = "<ol>";
+  var html = "<ol class=\"leaderboard\">";
   for (var i = 0; i < 20 && i < dsUsersByLifetimeEdits.length; i++) {
     var user = dsUsersByLifetimeEdits[i];
     html += "<li>" + user.name + " (" + user.lifetimeEdits + ")</li>";
