@@ -5,6 +5,8 @@ This is a dashboard visualizing changes to the WebPlatform.org MediaWiki. It hel
 
 Some of the generated graphs and lists base on the given timeframe and list of usernames. The timeframe, autocycle frequency and graphs to display are set via a settings panel that displays via the wrench icon to the upper right of the screen. The usernames are fetched from a Google Spreadsheet; what the URL and correct column of that document is, needs to be set via the settings panel as well.
 
+Note: For this to work you have to publish your spreadsheet (File > Publish to the web > All sheets)!
+
 Available Graphs (Examples):
 * Simple Text, to use as e.g. Agenda
 * Invalid Users (used to display usernames that could not be resolved via the MediaWiki API, so Doc Sprint admins are alerted to correct the Google Spreadsheet manually)
